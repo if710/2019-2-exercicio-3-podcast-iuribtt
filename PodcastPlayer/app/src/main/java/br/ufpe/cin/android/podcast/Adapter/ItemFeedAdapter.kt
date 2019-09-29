@@ -1,6 +1,11 @@
 package br.ufpe.cin.android.podcast.Adapter
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
+import android.net.Uri
+import android.os.IBinder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,11 +14,15 @@ import androidx.recyclerview.widget.RecyclerView
 import br.ufpe.cin.android.podcast.EpisodeDetailActivity
 import br.ufpe.cin.android.podcast.Model.ItemFeed
 import br.ufpe.cin.android.podcast.R
+import br.ufpe.cin.android.podcast.Suporte.DownloadService
+import br.ufpe.cin.android.podcast.Suporte.MusicPlayerService
 import kotlinx.android.synthetic.main.itemlista.view.*
+import java.io.File
 
 class ItemFeedAdapter(private val myDataset: List<ItemFeed>) :
     RecyclerView.Adapter<ItemFeedAdapter.MyViewHolder>() {
 
+    private lateinit var context: Context
     // Create new views (invoked by the layout manager)
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -24,7 +33,28 @@ class ItemFeedAdapter(private val myDataset: List<ItemFeed>) :
             .inflate(R.layout.itemlista, parent, false)
         // set the view's size, margins, paddings and layout parameters
 
+        context = parent.getContext();
+
         return MyViewHolder(textView)
+    }
+
+    internal var musicPlayerService: MusicPlayerService? = null
+    internal var isBound = false
+    internal val TAG = "MusicBindingActivity"
+
+    private val sConn = object : ServiceConnection {
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            musicPlayerService = null
+            isBound = false
+        }
+
+        override fun onServiceConnected(p0: ComponentName?, b: IBinder?) {
+            val binder = b as MusicPlayerService.MusicBinder
+            musicPlayerService = binder.service
+            isBound = true
+
+        }
+
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
@@ -44,11 +74,50 @@ class ItemFeedAdapter(private val myDataset: List<ItemFeed>) :
         //holder.action?.text = itemFeed.
         holder.data?.text = itemFeed.pubDate
 
-        //holder.action?.text = itemFeed.
-        holder.btnAction.setOnClickListener{
+        val root = context.getExternalFilesDir(context.getString(R.string.app_name))
 
-            Toast.makeText(it.context, "Clicou no item da posição: ${itemFeed.downloadLink}", Toast.LENGTH_SHORT)
-                .show()
+        val output = File(root, Uri.parse(itemFeed.downloadLink).lastPathSegment)
+
+        var isDownload = true
+        if (!output.exists()) {
+            holder.btnAction.setBackgroundResource(R.drawable.ic_download_outline)
+            isDownload = true;
+        } else {
+
+            val serviceIntent = Intent(context, MusicPlayerService::class.java)
+
+//            if(serviceIntent.)
+            holder.btnAction.setBackgroundResource(R.drawable.ic_play_circle)
+            isDownload = false;
+        }
+
+        holder.btnAction.setOnClickListener{
+            if(isDownload) {
+                val downloadService = Intent(it.context, DownloadService::class.java)
+                downloadService.data = Uri.parse(itemFeed.downloadLink)
+                downloadService.putExtra("title", itemFeed.title)
+                downloadService.putExtra("link", itemFeed.link)
+                it.context.startService(downloadService)
+            }else{
+
+                if (!isBound) {
+                    Toast.makeText(context, "Fazendo o Binding...", Toast.LENGTH_SHORT).show()
+                    val bindIntent = Intent(context, MusicPlayerService::class.java)
+                    isBound = context.bindService(bindIntent,sConn, Context.BIND_AUTO_CREATE)
+                }
+
+                val musicServiceIntent = Intent(context, MusicPlayerService::class.java)
+                context.startService(musicServiceIntent)
+
+                val musicPlayerServiceIntent = Intent(it.context, MusicPlayerService::class.java)
+                musicPlayerServiceIntent.data = Uri.parse(itemFeed.downloadLink)
+                it.context.startService(musicPlayerServiceIntent)
+
+                if (isBound) {
+                    musicPlayerService?.playMusic()
+                }
+
+            }
         }
 
     }

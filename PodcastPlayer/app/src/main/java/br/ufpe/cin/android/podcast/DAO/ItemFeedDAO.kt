@@ -14,6 +14,12 @@ interface ItemFeedDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun inserirItemFeed(vararg itemFeed: ItemFeed)
 
+    /**
+     * Atualizar apenas o caminho do arquivo MP3 baixado
+     */
+    @Query("UPDATE item_feed SET pathFilePodCastMP3=:pathFilePodCastMP3 WHERE link = :link")
+    fun atualizarPathMP3ItemFeed(link: String?, pathFilePodCastMP3: String)
+
     @Update
     fun atualizarItemFeed(vararg itemFeed: ItemFeed)
 

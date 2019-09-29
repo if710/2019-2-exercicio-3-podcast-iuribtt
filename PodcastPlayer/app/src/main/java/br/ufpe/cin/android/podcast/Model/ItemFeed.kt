@@ -10,7 +10,8 @@ data class ItemFeed(
     val link: String,
     val pubDate: String,
     val description: String,
-    val downloadLink: String
+    val downloadLink: String,
+    val pathFilePodCastMP3: String
 ) {
     override fun toString(): String {
         return title
