@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">PodcastPlayer</string>
+    <string name="action_download">download</string>
+    <string name="detalhes_do_episodio">Detalhes do episódio</string>
+    <string name="descriao">Descrição:</string>
+    <string name="link">Link:</string>
+    <string name="titulo">Título</string>
+</resources>
