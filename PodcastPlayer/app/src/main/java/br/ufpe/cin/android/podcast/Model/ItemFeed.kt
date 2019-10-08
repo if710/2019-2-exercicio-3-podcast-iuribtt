@@ -11,7 +11,8 @@ data class ItemFeed(
     val pubDate: String,
     val description: String,
     val downloadLink: String,
-    val pathFilePodCastMP3: String
+    val pathFilePodCastMP3: String,
+    val pausedIn: Int
 ) {
     override fun toString(): String {
         return title

@@ -20,6 +20,12 @@ interface ItemFeedDAO {
     @Query("UPDATE item_feed SET pathFilePodCastMP3=:pathFilePodCastMP3 WHERE link = :link")
     fun atualizarPathMP3ItemFeed(link: String?, pathFilePodCastMP3: String)
 
+    /**
+     * Atualizar apenas o caminho do arquivo MP3 baixado
+     */
+    @Query("UPDATE item_feed SET pausedIn=:pausedIn WHERE link = :link")
+    fun atualizarQuandoFoiPausado(link: String?, pausedIn: Int)
+
     @Update
     fun atualizarItemFeed(vararg itemFeed: ItemFeed)
 

@@ -129,7 +129,8 @@ object Parser {
             pubDate!!,
             description!!,
             downloadLink!!,
-            ""
+            "",
+            0
         )
     }
 

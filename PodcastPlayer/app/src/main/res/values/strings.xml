@@ -5,4 +5,9 @@
     <string name="descriao">Descrição:</string>
     <string name="link">Link:</string>
     <string name="titulo">Título</string>
+    <string name="basic_preferences">Preferências</string>
+    <string name="summary_basic_preference">asdf</string>
+    <string name="title_basic_preference">AAAAAA</string>
+    <string name="preference_atualizar_seek_bar">FREQUENCIA_ATUALIZAR</string>
+
 </resources>

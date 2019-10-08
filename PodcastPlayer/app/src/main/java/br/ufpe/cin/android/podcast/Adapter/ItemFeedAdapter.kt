@@ -78,32 +78,32 @@ class ItemFeedAdapter(private val myDataset: List<ItemFeed>) :
 
         val output = File(root, Uri.parse(itemFeed.downloadLink).lastPathSegment)
 
-        var isDownload = true
+        var isDownloaded = true
         if (!output.exists()) {
             holder.btnAction.setBackgroundResource(R.drawable.ic_download_outline)
-            isDownload = true;
+            isDownloaded = true;
         } else {
 
             val serviceIntent = Intent(context, MusicPlayerService::class.java)
 
 //            if(serviceIntent.)
             holder.btnAction.setBackgroundResource(R.drawable.ic_play_circle)
-            isDownload = false;
+            isDownloaded = false;
         }
 
-        holder.btnAction.setOnClickListener{
-            if(isDownload) {
+        holder.btnAction.setOnClickListener {
+            if (isDownloaded) {
                 val downloadService = Intent(it.context, DownloadService::class.java)
                 downloadService.data = Uri.parse(itemFeed.downloadLink)
                 downloadService.putExtra("title", itemFeed.title)
                 downloadService.putExtra("link", itemFeed.link)
                 it.context.startService(downloadService)
-            }else{
+            } else {
 
                 if (!isBound) {
                     Toast.makeText(context, "Fazendo o Binding...", Toast.LENGTH_SHORT).show()
                     val bindIntent = Intent(context, MusicPlayerService::class.java)
-                    isBound = context.bindService(bindIntent,sConn, Context.BIND_AUTO_CREATE)
+                    isBound = context.bindService(bindIntent, sConn, Context.BIND_AUTO_CREATE)
                 }
 
                 val musicServiceIntent = Intent(context, MusicPlayerService::class.java)
@@ -114,7 +114,17 @@ class ItemFeedAdapter(private val myDataset: List<ItemFeed>) :
                 it.context.startService(musicPlayerServiceIntent)
 
                 if (isBound) {
-                    musicPlayerService?.playMusic()
+                    if (musicPlayerService!!.isPlaying) {
+                        musicPlayerService?.pauseMusic()
+                    }
+
+                    musicPlayerService?.playMusic(itemFeed.pausedIn)
+                    holder.btnAction.setBackgroundResource(R.drawable.ic_pause_circle)
+                    Toast.makeText(context, "Playing ", Toast.LENGTH_SHORT).show()
+//                    }else{
+//                        musicPlayerService?.pauseMusic()
+//                        holder.btnAction.setBackgroundResource(R.drawable.ic_play_circle)
+//                    }
                 }
 
             }

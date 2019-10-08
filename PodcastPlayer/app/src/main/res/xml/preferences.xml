@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SeekBarPreference
+        android:defaultValue="15"
+        android:key="@string/preference_atualizar_seek_bar"
+        android:max="24"
+        app:key="seekbar"
+        app:min="5"
+        app:summary="Defina a periodicidade das atualizações"
+        app:title="Frequência de atualização" />
+</androidx.preference.PreferenceScreen>

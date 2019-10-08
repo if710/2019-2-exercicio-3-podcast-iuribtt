@@ -20,6 +20,8 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 
+
+
 class DownloadService : IntentService("DownloadService") {
 
 
@@ -83,8 +85,20 @@ class DownloadService : IntentService("DownloadService") {
                 c.disconnect()
             }
 
-            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(DOWNLOAD_COMPLETE))
+            notification = NotificationCompat.Builder(
+                applicationContext, "1"
+            )
+                .setSmallIcon(android.R.drawable.arrow_down_float)
+                .setOngoing(true).setContentTitle(getString(R.string.app_name))
+                .setContentText("Baixado!: \"$title\"")
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent).build()
 
+            val intent = Intent(DOWNLOAD_COMPLETE)
+            // Passa o link para saber qual foi o podcast baixado
+            intent.putExtra("link", link)
+            //Envia um LocalBroadcast para a aplicação informando que o download foi concluido
+            LocalBroadcastManager.getInstance(this).sendBroadcast(Intent(DOWNLOAD_COMPLETE))
 
         } catch (e2: IOException) {
             Toast.makeText(
